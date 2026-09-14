@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Персонажи — Я Второй?!</title>
+
+  <style>
+    :root {
+      --bg-deep: #181410;
+      --bg: #201a14;
+      --panel: rgba(32, 26, 20, 0.68);
+      --panel-solid: #241d17;
+      --border: rgba(237, 224, 200, 0.10);
+      --border-hover: rgba(147, 168, 120, 0.42);
+
+      --text: #ede0c8;
+      --text-soft: #d4c4a5;
+      --text-dim: #a89880;
+      --text-bright: #f6ecd5;
+
+      --accent: #93a878;
+      --accent-bright: #a8bd8a;
+      --accent-dim: #5a6a4a;
+
+      --heart: #d47a8a;
+      --heart-bright: #e89aab;
+      --locked: #6a5a4a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg-deep);
+      font-family: Georgia, serif;
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, #14110c 0%, #242018 45%, #1c1a15 100%),
+        radial-gradient(ellipse at 20% 0%, rgba(236, 223, 193, .07), transparent 55%),
+        radial-gradient(ellipse at 80% 100%, rgba(163, 184, 122, .05), transparent 60%),
+        radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0, 0, 0, .75) 100%);
+      z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .04;
+      background-image:
+        repeating-linear-gradient(0deg, transparent 0 2px, #fff 2px 3px),
+        repeating-linear-gradient(90deg, transparent 0 3px, #fff 3px 4px);
+      z-index: -1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px clamp(20px, 5vw, 60px);
+      border-bottom: 1px solid var(--border);
+      background: rgba(20, 16, 12, .6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand {
+      font-size: clamp(14px, 1.6vw, 18px);
+      letter-spacing: .1em;
+      color: var(--text);
+      font-style: italic;
+      text-decoration: none;
+    }
+    .brand b {
+      color: var(--accent-bright);
+      font-style: normal;
+      font-weight: normal;
+      letter-spacing: .06em;
+    }
+    .top-nav {
+      display: flex;
+      gap: clamp(14px, 2.5vw, 30px);
+      font-size: clamp(11px, 1.1vw, 13px);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .top-nav a {
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .top-nav a:hover { color: var(--accent-bright); }
+    .top-nav a.active { color: var(--text); }
+
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: clamp(30px, 5vw, 60px) clamp(20px, 5vw, 60px);
+    }
+
+    .page-header { margin-bottom: clamp(30px, 4vw, 50px); }
+    .page-eyebrow {
+      font-size: 11px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+    .page-title {
+      font-size: clamp(32px, 4.5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: .02em;
+      color: var(--text-bright);
+      font-weight: normal;
+      font-style: italic;
+    }
+    .page-title .alt {
+      color: var(--accent-bright);
+      font-style: normal;
+      letter-spacing: .06em;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: clamp(20px, 3vw, 32px);
+    }
+    .section-title h2 {
+      font-size: clamp(14px, 1.6vw, 18px);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--text);
+      font-style: italic;
+      font-weight: normal;
+      white-space: nowrap;
+    }
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    .sectors { margin-bottom: clamp(30px, 4vw, 50px); }
+    .sectors-track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 6px 4px 20px;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent-dim) transparent;
+    }
+    .sectors-track::-webkit-scrollbar { height: 6px; }
+    .sectors-track::-webkit-scrollbar-track { background: transparent; }
+    .sectors-track::-webkit-scrollbar-thumb {
+      background: var(--accent-dim);
+      border-radius: 3px;
+    }
+
+    .sector {
+      flex: 0 0 auto;
+      width: clamp(200px, 22vw, 260px);
+      aspect-ratio: 4 / 3;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      background:
+        repeating-linear-gradient(45deg, rgba(237, 224, 200, .02) 0 10px, transparent 10px 20px),
+        rgba(20, 16, 12, .65);
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color .3s, transform .3s, background .3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+    }
+    .sector:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+    }
+    .sector::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(147, 168, 120, .08);
+      border-radius: 2px;
+      pointer-events: none;
+      transition: border-color .3s;
+    }
+    .sector:hover::after { border-color: rgba(147, 168, 120, .22); }
+
+    .sector.active {
+      border-color: var(--accent-bright);
+      background:
+        repeating-linear-gradient(45deg, rgba(147, 168, 120, .04) 0 10px, transparent 10px 20px),
+        rgba(28, 40, 30, .7);
+      transform: translateY(-3px);
+      box-shadow:
+        0 20px 50px -20px rgba(0, 0, 0, .8),
+        inset 0 0 0 1px rgba(147, 168, 120, .18);
+    }
+    .sector.active::after { border-color: rgba(147, 168, 120, .35); }
+
+    .sector.locked {
+      cursor: not-allowed;
+      opacity: .55;
+      filter: saturate(.4);
+    }
+    .sector.locked:hover { transform: none; border-color: var(--border); }
+    .sector.locked::after { border-color: rgba(147, 168, 120, .05); }
+
+    .sector-lock {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .sector-lock svg {
+      width: 34px; height: 34px;
+      stroke: var(--locked);
+      opacity: .9;
+    }
+
+    .sector-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+    .sector-num {
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+    .sector-status {
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      padding: 3px 8px;
+      border: 1px solid var(--border-hover);
+      border-radius: 100px;
+      font-style: italic;
+    }
+    .sector.locked .sector-status {
+      color: var(--locked);
+      border-color: rgba(106, 90, 74, .4);
+    }
+
+    .sector-body { position: relative; z-index: 1; }
+    .sector-name {
+      font-size: clamp(20px, 2.2vw, 26px);
+      color: var(--text-bright);
+      font-style: italic;
+      letter-spacing: .04em;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .sector.locked .sector-name { color: var(--text-dim); }
+    .sector-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: clamp(20px, 2.5vw, 30px);
+    }
+
+    .sort-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .sort-label {
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-right: 6px;
+    }
+    .ctrl-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 7px 16px;
+      font-family: Georgia, serif;
+      font-size: 11px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: color .2s, border-color .2s, background .2s;
+      font-style: italic;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ctrl-btn:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    .ctrl-btn.active {
+      color: var(--accent-bright);
+      border-color: var(--accent-bright);
+      background: rgba(147, 168, 120, .08);
+    }
+    .ctrl-btn .heart-mini {
+      width: 10px; height: 10px;
+      fill: var(--heart-bright);
+      display: inline-block;
+    }
+
+    .filter-pill {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border: 1px solid var(--accent-bright);
+      border-radius: 100px;
+      background: rgba(147, 168, 120, .1);
+      font-size: 11px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      font-style: italic;
+    }
+    .filter-pill.show { display: inline-flex; }
+    .filter-pill .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent-bright);
+    }
+    .filter-pill button {
+      background: none;
+      border: none;
+      color: var(--accent-bright);
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0 4px;
+      transition: color .2s;
+    }
+    .filter-pill button:hover { color: #fff; }
+
+    .characters {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: clamp(14px, 2vw, 22px);
+      min-height: 200px;
+    }
+
+    .character {
+      position: relative;
+      display: block;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--panel);
+      overflow: hidden;
+      transition: border-color .3s, transform .3s, background .3s, box-shadow .3s, opacity .3s, filter .3s;
+      animation: fadeUp .5s ease backwards;
+    }
+    .character:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      background: rgba(40, 30, 24, .78);
+      box-shadow:
+        0 24px 50px -22px rgba(0, 0, 0, .8),
+        inset 0 0 0 1px rgba(147, 168, 120, .12);
+    }
+    .character::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(147, 168, 120, .06);
+      border-radius: 2px;
+      pointer-events: none;
+      transition: border-color .3s;
+      z-index: 1;
+    }
+    .character:hover::after { border-color: rgba(147, 168, 120, .18); }
+
+    /* Портрет */
+    .character-portrait {
+      aspect-ratio: 3 / 4;
+      background:
+        repeating-linear-gradient(45deg, rgba(237, 224, 200, .03) 0 12px, transparent 12px 24px),
+        linear-gradient(180deg, rgba(20, 16, 12, .5) 0%, rgba(20, 16, 12, .8) 100%);
+      display: grid;
+      place-items: center;
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .character-portrait::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(147, 168, 120, .06), transparent 60%);
+      opacity: 0;
+      transition: opacity .4s;
+      pointer-events: none;
+    }
+    .character:hover .character-portrait::before { opacity: 1; }
+
+    /* Слой для праздничной гифки — на весь портрет */
+    .portrait-celebration {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 4;
+      will-change: opacity;
+    }
+    .portrait-celebration.show {
+      animation: celebrationPop 1s ease forwards;
+    }
+    @keyframes celebrationPop {
+      0%   { opacity: 0; transform: scale(.9); }
+      15%  { opacity: 1; transform: scale(1.02); }
+      85%  { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1); }
+    }
+
+    /* Сердечко */
+    .heart-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border: 1px solid rgba(212, 122, 138, .35);
+      border-radius: 100px;
+      background: rgba(20, 12, 14, .55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      font-family: inherit;
+    }
+    .heart-btn:hover {
+      border-color: var(--heart-bright);
+      background: rgba(40, 20, 24, .7);
+    }
+    .heart-btn:active { transform: scale(.94); }
+
+    .heart-icon {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: var(--heart);
+      stroke-width: 1.8;
+      transition: fill .2s, stroke .2s;
+    }
+    .heart-btn.liked .heart-icon,
+    .heart-btn:hover .heart-icon {
+      fill: var(--heart-bright);
+      stroke: var(--heart-bright);
+    }
+    .heart-count {
+      font-size: 11px;
+      letter-spacing: .04em;
+      color: var(--text-soft);
+      font-style: italic;
+      transition: color .2s;
+      min-width: 12px;
+      text-align: center;
+    }
+    .heart-btn:hover .heart-count { color: var(--heart-bright); }
+
+    @keyframes heartPop {
+      0%   { transform: scale(1); }
+      35%  { transform: scale(1.35); }
+      70%  { transform: scale(.92); }
+      100% { transform: scale(1); }
+    }
+    .heart-btn.pop .heart-icon {
+      animation: heartPop .45s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    @keyframes heartFloat {
+      0%   { opacity: 1; transform: translate(-50%, 0) scale(.8); }
+      100% { opacity: 0; transform: translate(-50%, -40px) scale(1.4); }
+    }
+    .heart-float {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      fill: var(--heart-bright);
+      pointer-events: none;
+      animation: heartFloat .8s ease-out forwards;
+      z-index: 6;
+    }
+
+    .character-info {
+      padding: 16px 18px 18px;
+      position: relative;
+      z-index: 2;
+    }
+    .character-name {
+      font-size: clamp(17px, 1.7vw, 20px);
+      color: var(--text-bright);
+      font-style: italic;
+      letter-spacing: .03em;
+      margin-bottom: 6px;
+      transition: color .3s;
+    }
+    .character:hover .character-name { color: var(--accent-bright); }
+
+    .character-role {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 12px;
+      letter-spacing: .04em;
+    }
+
+    .character-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      background: none;
+      font-family: inherit;
+      cursor: pointer;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    .tag:hover {
+      color: var(--accent-bright);
+      border-color: var(--accent-bright);
+      background: rgba(147, 168, 120, .08);
+    }
+    .tag.active {
+      color: var(--bg-deep);
+      background: var(--accent-bright);
+      border-color: var(--accent-bright);
+    }
+
+    .character.dimmed {
+      opacity: .22;
+      filter: saturate(.3);
+      pointer-events: none;
+    }
+
+    .character-arrow {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      font-size: 14px;
+      color: var(--accent-bright);
+      opacity: 0;
+      transform: translate(-4px, 4px);
+      transition: opacity .3s, transform .3s;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .character:hover .character-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-dim);
+      font-style: italic;
+      font-size: 14px;
+      letter-spacing: .1em;
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 24px clamp(20px, 5vw, 60px);
+      background: rgba(20, 16, 12, .6);
+      margin-top: clamp(40px, 6vw, 80px);
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 11px;
+      letter-spacing: .12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .footer-inner a { color: var(--text-dim); text-decoration: none; }
+    .footer-inner a:hover { color: var(--accent-bright); }
+
+    @media (max-width: 640px) {
+      .top-nav { display: none; }
+      .sector { width: 180px; }
+      .characters { grid-template-columns: repeat(2, 1fr); }
+      .character-name { font-size: 15px; }
+      .character-role { font-size: 11px; }
+      .sort-label { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <a class="brand" href="hub.html">Я <b>Второй?!</b></a>
+    <nav class="top-nav">
+      <a href="#">Секторы</a>
+      <a href="#" class="active">Персонажи</a>
+      <a href="#">Фанарты</a>
+      <a href="#">Об авторе</a>
+    </nav>
+  </header>
+
+  <main class="page">
+
+    <header class="page-header">
+      <div class="page-eyebrow">Архив · Лица</div>
+      <h1 class="page-title">
+        Персонажи <span class="alt">по секторам</span>
+      </h1>
+    </header>
+
+    <section class="sectors">
+      <div class="section-title"><h2>Выберите сектор</h2></div>
+
+      <div class="sectors-track">
+        <div class="sector active" data-sector="dungeon">
+          <div class="sector-head">
+            <span class="sector-num">Сектор I</span>
+            <span class="sector-status">Открыт</span>
+          </div>
+          <div class="sector-body">
+            <div class="sector-name">Данжен</div>
+            <div class="sector-desc">Фэнтези · рыцари, мечи, подземелья</div>
+          </div>
+        </div>
+
+        <div class="sector locked" data-sector="unknown-1">
+          <div class="sector-lock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <rect x="5" y="10" width="14" height="10" rx="2"/>
+              <path d="M8 10 V7 a4 4 0 0 1 8 0 V10"/>
+            </svg>
+          </div>
+          <div class="sector-head">
+            <span class="sector-num">Сектор II</span>
+            <span class="sector-status">Закрыт</span>
+          </div>
+          <div class="sector-body">
+            <div class="sector-name">?</div>
+            <div class="sector-desc">Информация засекречена</div>
+          </div>
+        </div>
+
+        <div class="sector locked" data-sector="unknown-2">
+          <div class="sector-lock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <rect x="5" y="10" width="14" height="10" rx="2"/>
+              <path d="M8 10 V7 a4 4 0 0 1 8 0 V10"/>
+            </svg>
+          </div>
+          <div class="sector-head">
+            <span class="sector-num">Сектор III</span>
+            <span class="sector-status">Закрыт</span>
+          </div>
+          <div class="sector-body">
+            <div class="sector-name">?</div>
+            <div class="sector-desc">Информация засекречена</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="top-controls">
+      <div class="sort-row">
+        <span class="sort-label">Сортировка</span>
+        <button class="ctrl-btn active" data-sort="hearts">
+          <svg class="heart-mini" viewBox="0 0 24 24">
+            <path d="M12 21s-7-4.35-9.5-9C.86 8.65 3 5 6.5 5 9 5 10.5 7 12 9c1.5-2 3-4 5.5-4C21 5 23.14 8.65 21.5 12 19 16.65 12 21 12 21z"/>
+          </svg>
+          По сердечкам
+        </button>
+        <button class="ctrl-btn" data-sort="plot">По сюжету</button>
+        <button class="ctrl-btn" data-sort="alpha">А — Я</button>
+        <button class="ctrl-btn" data-sort="role">По роли</button>
+      </div>
+
+      <div class="filter-pill" id="filterPill">
+        <span class="dot"></span>
+        <span>Фильтр: <b id="filterName">—</b></span>
+        <button id="clearFilter" aria-label="Сбросить фильтр">✕</button>
+      </div>
+    </div>
+
+    <section class="characters" id="characters"></section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>© <b>Я Второй?!</b></div>
+      <div><a href="hub.html">← Назад в хаб</a></div>
+    </div>
+  </footer>
+
+  <script>
+    /* ============================================================
+       ДАННЫЕ ПЕРСОНАЖЕЙ
+       ============================================================ */
+    const characters = [
+      { id: 'vtoroy',   name: 'Второй',   role: 'Протагонист',     link: 'characters/vtoroy.html',   plot: 1, role_sort: 1, tags: ['человек'] },
+      { id: 'overlord', name: 'Оверлорд', role: 'Говорящий меч',   link: 'characters/overlord.html', plot: 2, role_sort: 2, tags: ['оружие'] },
+      { id: 'kridans',  name: 'Криданс',  role: 'Герой',           link: 'characters/kridans.html',  plot: 3, role_sort: 3, tags: ['человек'] },
+      { id: 'linel',    name: 'Линель',   role: 'Проводник',       link: 'characters/linel.html',    plot: 4, role_sort: 4, tags: ['эльф'] },
+      { id: 'vera',     name: 'Вера',     role: 'Помощница героя', link: 'characters/vera.html',     plot: 5, role_sort: 5, tags: ['человек'] },
+      { id: 'kairus',   name: 'Кайрус',   role: 'Основатель',      link: 'characters/kairus.html',   plot: 6, role_sort: 6, tags: ['человек'] },
+      { id: 'mifi',     name: 'Мифи',     role: 'Администратор',   link: 'characters/mifi.html',     plot: 7, role_sort: 7, tags: ['иное'] }
+    ];
+
+    /* Гифка праздника — каждые 100 сердечек */
+    const CELEBRATION_GIF = 'assets/celebration.gif';
+
+    /* ============================================================
+       ХРАНИЛИЩЕ (localStorage)
+       ============================================================ */
+    const HEARTS_KEY = 'yavtoroy_hearts_v1';
+
+    function loadHearts() {
+      try { return JSON.parse(localStorage.getItem(HEARTS_KEY) || '{}'); }
+      catch (e) { return {}; }
+    }
+    function saveHearts(obj) {
+      try { localStorage.setItem(HEARTS_KEY, JSON.stringify(obj)); } catch (e) {}
+    }
+
+    let hearts = loadHearts();
+
+    /* ============================================================
+       СОСТОЯНИЕ
+       ============================================================ */
+    let currentSort = 'hearts';
+    let activeTag = null;
+
+    /* Хранилище таймеров — чтобы не копились */
+    const celebrationTimers = {};
+    const popTimers = {};
+
+    /* ============================================================
+       ИКОНКА
+       ============================================================ */
+    const HEART_SVG = `
+      <svg class="heart-icon" viewBox="0 0 24 24">
+        <path d="M12 21s-7-4.35-9.5-9C.86 8.65 3 5 6.5 5 9 5 10.5 7 12 9c1.5-2 3-4 5.5-4C21 5 23.14 8.65 21.5 12 19 16.65 12 21 12 21z"/>
+      </svg>
+    `;
+
+    /* ============================================================
+       РЕНДЕР
+       ============================================================ */
+    const grid = document.getElementById('characters');
+    const filterPill = document.getElementById('filterPill');
+    const filterName = document.getElementById('filterName');
+
+    function render() {
+      let list = characters.slice();
+
+      if (currentSort === 'hearts') {
+        list.sort((a, b) => (hearts[b.id] || 0) - (hearts[a.id] || 0));
+      } else if (currentSort === 'plot') {
+        list.sort((a, b) => a.plot - b.plot);
+      } else if (currentSort === 'alpha') {
+        list.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+      } else if (currentSort === 'role') {
+        list.sort((a, b) => a.role_sort - b.role_sort);
+      }
+
+      grid.innerHTML = '';
+
+      list.forEach((c, i) => {
+        const heartsCount = hearts[c.id] || 0;
+
+        const el = document.createElement('div');
+        el.className = 'character';
+        el.dataset.id = c.id;
+        el.dataset.link = c.link;
+        el.setAttribute('role', 'link');
+        el.setAttribute('tabindex', '0');
+        el.style.animationDelay = (i * 0.05) + 's';
+
+        if (activeTag && !c.tags.includes(activeTag)) {
+          el.classList.add('dimmed');
+        }
+
+        const tagsHtml = c.tags.map(t => `
+          <button class="tag ${activeTag === t ? 'active' : ''}" data-tag="${t}">${t}</button>
+        `).join('');
+
+        el.innerHTML = `
+          <div class="character-portrait">
+            <button class="heart-btn" data-id="${c.id}" aria-label="Поставить сердечко">
+              ${HEART_SVG}
+              <span class="heart-count">${heartsCount}</span>
+            </button>
+            <div class="portrait-celebration" data-celebration></div>
+            портрет · 3:4
+          </div>
+          <div class="character-info">
+            <div class="character-name">${c.name}</div>
+            <div class="character-role">${c.role}</div>
+            <div class="character-tags">${tagsHtml}</div>
+          </div>
+          <div class="character-arrow">→</div>
+        `;
+
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('.heart-btn')) return;
+          if (e.target.closest('.tag')) return;
+          // window.location.href = c.link;
+          console.log('Открыть страницу:', c.link);
+        });
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.target.closest('.heart-btn') && !e.target.closest('.tag')) {
+            // window.location.href = c.link;
+            console.log('Открыть страницу:', c.link);
+          }
+        });
+
+        grid.appendChild(el);
+      });
+
+      document.querySelectorAll('.heart-btn').forEach(btn => {
+        btn.addEventListener('click', handleHeartClick);
+      });
+      document.querySelectorAll('.tag').forEach(tag => {
+        tag.addEventListener('click', handleTagClick);
+      });
+    }
+
+    /* ============================================================
+       ФИЛЬТР ПО ТЕГАМ
+       ============================================================ */
+    function handleTagClick(e) {
+      e.stopPropagation();
+      const tag = e.currentTarget.dataset.tag;
+
+      if (activeTag === tag) {
+        activeTag = null;
+        filterPill.classList.remove('show');
+      } else {
+        activeTag = tag;
+        filterName.textContent = tag;
+        filterPill.classList.add('show');
+      }
+
+      document.querySelectorAll('.character').forEach(el => {
+        const id = el.dataset.id;
+        const c = characters.find(x => x.id === id);
+        if (!c) return;
+        if (activeTag && !c.tags.includes(activeTag)) {
+          el.classList.add('dimmed');
+        } else {
+          el.classList.remove('dimmed');
+        }
+      });
+
+      document.querySelectorAll('.tag').forEach(t => {
+        if (t.dataset.tag === activeTag) t.classList.add('active');
+        else t.classList.remove('active');
+      });
+    }
+
+    document.getElementById('clearFilter').addEventListener('click', () => {
+      activeTag = null;
+      filterPill.classList.remove('show');
+      document.querySelectorAll('.character').forEach(el => el.classList.remove('dimmed'));
+      document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+    });
+
+    /* ============================================================
+       КЛИК ПО СЕРДЕЧКУ
+       — БЕЗ пересортировки (чтобы не было мерцания)
+       — гифка каждые 100
+       ============================================================ */
+    function handleHeartClick(e) {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const id = btn.dataset.id;
+
+      const oldCount = hearts[id] || 0;
+      const newCount = oldCount + 1;
+
+      hearts[id] = newCount;
+      saveHearts(hearts);
+
+      // Обновляем только цифру — без перерисовки
+      btn.querySelector('.heart-count').textContent = newCount;
+
+      // Поп-анимация сердечка (с защитой от накопления таймеров)
+      btn.classList.add('liked');
+      if (popTimers[id]) clearTimeout(popTimers[id]);
+      btn.classList.remove('pop');
+      // принудительный reflow, чтобы анимация перезапустилась
+      void btn.offsetWidth;
+      btn.classList.add('pop');
+      popTimers[id] = setTimeout(() => btn.classList.remove('pop'), 500);
+
+      // Летящее сердечко
+      const float = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      float.setAttribute('viewBox', '0 0 24 24');
+      float.setAttribute('class', 'heart-float');
+      float.innerHTML = '<path d="M12 21s-7-4.35-9.5-9C.86 8.65 3 5 6.5 5 9 5 10.5 7 12 9c1.5-2 3-4 5.5-4C21 5 23.14 8.65 21.5 12 19 16.65 12 21 12 21z"/>';
+      btn.parentElement.appendChild(float);
+      setTimeout(() => float.remove(), 850);
+
+      // ===== ПРАЗДНИК: срабатывает ровно при кратном 100 =====
+      // 99→100 ✅, 100→101 ❌, 199→200 ✅, 200→201 ❌
+      const crossed = Math.floor(oldCount / 100) !== Math.floor(newCount / 100);
+      if (crossed) {
+        playCelebration(btn.closest('.character'), id);
+      }
+    }
+
+    function playCelebration(cardEl, id) {
+      if (!cardEl) return;
+      const layer = cardEl.querySelector('[data-celebration]');
+      if (!layer) return;
+
+      // Чистим предыдущий таймер и анимацию
+      if (celebrationTimers[id]) clearTimeout(celebrationTimers[id]);
+      layer.classList.remove('show');
+      void layer.offsetWidth;
+
+      // Ставим гифку с cache-buster, чтобы браузер проигрывал её с начала
+      layer.style.backgroundImage = `url("${CELEBRATION_GIF}?t=${Date.now()}")`;
+      layer.classList.add('show');
+
+      celebrationTimers[id] = setTimeout(() => {
+        layer.classList.remove('show');
+      }, 1000);
+    }
+
+    /* ============================================================
+       СОРТИРОВКА
+       ============================================================ */
+    document.querySelectorAll('.ctrl-btn[data-sort]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ctrl-btn[data-sort]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSort = btn.dataset.sort;
+        render();
+      });
+    });
+
+    /* ============================================================
+       СЕКТОРА
+       ============================================================ */
+    document.querySelectorAll('.sector').forEach(s => {
+      s.addEventListener('click', () => {
+        if (s.classList.contains('locked')) {
+          s.animate(
+            [
+              { transform: 'translateX(0)' },
+              { transform: 'translateX(-4px)' },
+              { transform: 'translateX(4px)' },
+              { transform: 'translateX(-2px)' },
+              { transform: 'translateX(2px)' },
+              { transform: 'translateX(0)' }
+            ],
+            { duration: 260, easing: 'ease-in-out' }
+          );
+          return;
+        }
+        document.querySelectorAll('.sector').forEach(x => x.classList.remove('active'));
+        s.classList.add('active');
+      });
+    });
+
+    /* ============================================================
+       СТАРТ
+       ============================================================ */
+    render();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ru" data-sector="dungeon">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Читать · Глава 1 — Я Второй?!</title>
+
+<style>
+  html[data-sector="dungeon"] {
+    --bg-deep: #13100c; --bg-surface: #1c1813; --panel: rgba(19, 16, 12, 0.85);
+    --text: #ede0c8; --text-dim: #8a8070; --text-bright: #f6ecd5;
+    --accent: #a8bd8a; --accent-2: #c9a878;
+    --accent-soft: rgba(168, 189, 138, 0.35); --accent-2-soft: rgba(201, 168, 120, 0.35);
+    --accent-dim: #5a6a4a;
+    --border: rgba(237, 224, 200, 0.08); --border-strong: rgba(237, 224, 200, 0.16);
+  }
+  html[data-sector="cyber"] {
+    --bg-deep: #0a0e14; --bg-surface: #10161f; --panel: rgba(10, 14, 20, 0.85);
+    --text: #d8e8f4; --text-dim: #5a7a94; --text-bright: #f0fbff;
+    --accent: #5ae0e8; --accent-2: #e8386e;
+    --accent-soft: rgba(90, 224, 232, 0.35); --accent-2-soft: rgba(232, 56, 110, 0.35);
+    --accent-dim: #2a5f66;
+    --border: rgba(90, 224, 232, 0.08); --border-strong: rgba(90, 224, 232, 0.18);
+  }
+  html[data-sector="detective"] {
+    --bg-deep: #17191c; --bg-surface: #1f2226; --panel: rgba(23, 25, 28, 0.85);
+    --text: #d4d7dc; --text-dim: #6e7379; --text-bright: #f0f2f5;
+    --accent: #9aa0a8; --accent-2: #c9a961;
+    --accent-soft: rgba(154, 160, 168, 0.35); --accent-2-soft: rgba(201, 169, 97, 0.35);
+    --accent-dim: #4a5058;
+    --border: rgba(154, 160, 168, 0.10); --border-strong: rgba(154, 160, 168, 0.20);
+  }
+  html[data-sector="twilight"] {
+    --bg-deep: #0f0a14; --bg-surface: #17101e; --panel: rgba(15, 10, 20, 0.85);
+    --text: #e8d8f0; --text-dim: #7a6a8a; --text-bright: #f4e8fc;
+    --accent: #b878d4; --accent-2: #6fd4d4;
+    --accent-soft: rgba(184, 120, 212, 0.35); --accent-2-soft: rgba(111, 212, 212, 0.35);
+    --accent-dim: #5a3a70;
+    --border: rgba(184, 120, 212, 0.10); --border-strong: rgba(184, 120, 212, 0.20);
+  }
+  html[data-sector="space"] {
+    --bg-deep: #060a18; --bg-surface: #0c1224; --panel: rgba(6, 10, 24, 0.85);
+    --text: #d4ddf4; --text-dim: #5a6a94; --text-bright: #f0f4ff;
+    --accent: #e8c878; --accent-2: #5a8ad4;
+    --accent-soft: rgba(232, 200, 120, 0.35); --accent-2-soft: rgba(90, 138, 212, 0.35);
+    --accent-dim: #6a5828;
+    --border: rgba(232, 200, 120, 0.08); --border-strong: rgba(232, 200, 120, 0.18);
+  }
+  html[data-sector="culinary"] {
+    --bg-deep: #150c08; --bg-surface: #1f120c; --panel: rgba(21, 12, 8, 0.85);
+    --text: #f0dcc4; --text-dim: #8a6a54; --text-bright: #fcecd8;
+    --accent: #e88a4c; --accent-2: #c94a3a;
+    --accent-soft: rgba(232, 138, 76, 0.35); --accent-2-soft: rgba(201, 74, 58, 0.35);
+    --accent-dim: #6a3818;
+    --border: rgba(232, 138, 76, 0.10); --border-strong: rgba(232, 138, 76, 0.20);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; background: var(--bg-deep);
+    font-family: Georgia, serif; color: var(--text);
+    overflow-x: hidden; line-height: 1.6;
+    transition: background .4s ease, color .4s ease;
+  }
+
+  .progress-bar {
+    position: fixed; top: 0; left: 0;
+    height: 2px; width: 0;
+    background: linear-gradient(to right, var(--accent), var(--accent-2));
+    box-shadow: 0 0 10px var(--accent-soft);
+    z-index: 300; transition: width .1s linear, background .4s;
+  }
+
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 12px clamp(14px, 3vw, 28px);
+    background: var(--panel);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    transition: transform .3s ease, opacity .3s ease, background .4s, border-color .4s;
+  }
+  .topbar.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+
+  .topbar-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  .icon-btn {
+    background: none; border: 1px solid var(--border-strong);
+    border-radius: 8px; width: 38px; height: 38px;
+    display: grid; place-items: center; cursor: pointer;
+    color: var(--text-dim); transition: all .2s; flex-shrink: 0;
+  }
+  .icon-btn:hover {
+    color: var(--accent); border-color: var(--accent);
+    box-shadow: 0 0 14px -4px var(--accent-soft);
+  }
+  .icon-btn svg {
+    width: 18px; height: 18px; stroke: currentColor; fill: none;
+    stroke-width: 1.8; stroke-linecap: round;
+  }
+
+  .topbar-title {
+    font-size: 13px; letter-spacing: .08em; font-style: italic;
+    color: var(--text); text-align: center; flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+  }
+  .topbar-title .num { color: var(--accent); font-style: normal; }
+  .topbar-title .sector {
+    color: var(--text-dim); font-size: 11px;
+    letter-spacing: .18em; text-transform: uppercase;
+    display: block; margin-top: 2px;
+  }
+
+  .topbar-progress {
+    font-size: 11px; letter-spacing: .14em; font-style: italic;
+    color: var(--accent-2); white-space: nowrap;
+    min-width: 40px; text-align: right; flex-shrink: 0;
+  }
+
+  .chapters-panel {
+    position: fixed; top: 0; left: 0;
+    height: 100vh; width: min(360px, 88vw);
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-strong);
+    z-index: 250; transform: translateX(-100%);
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1), background .4s, border-color .4s;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    box-shadow: 20px 0 60px -30px rgba(0, 0, 0, .9);
+  }
+  .chapters-panel.open { transform: translateX(0); }
+
+  .chapters-header {
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .chapters-eyebrow {
+    font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--accent); font-style: italic; margin-bottom: 6px;
+  }
+  .chapters-title {
+    font-size: 22px; font-style: italic; letter-spacing: .04em;
+    color: var(--text-bright); font-weight: normal;
+  }
+  .chapters-sub {
+    font-size: 11px; color: var(--text-dim); margin-top: 6px; letter-spacing: .1em;
+  }
+
+  .chapters-list {
+    flex: 1; overflow-y: auto; padding: 12px 0;
+    scrollbar-width: thin; scrollbar-color: var(--accent-dim) transparent;
+  }
+  .chapters-list::-webkit-scrollbar { width: 6px; }
+  .chapters-list::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 3px; }
+
+  .chapter-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 22px; text-decoration: none; color: var(--text);
+    border-left: 3px solid transparent;
+    transition: background .2s, border-color .2s, color .2s;
+    cursor: pointer;
+  }
+  .chapter-item:hover { background: rgba(255, 255, 255, .02); border-left-color: var(--accent-dim); }
+  .chapter-item.current { background: rgba(255, 255, 255, .04); border-left-color: var(--accent); }
+  .chapter-item.current .chapter-item-num {
+    color: var(--accent-2); border-color: var(--accent-2); background: var(--accent-2-soft);
+  }
+
+  .chapter-item-num {
+    width: 38px; height: 38px; border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    display: grid; place-items: center;
+    font-size: 13px; font-style: italic;
+    color: var(--text-dim); flex-shrink: 0; transition: all .2s;
+  }
+  .chapter-item-body { flex: 1; min-width: 0; }
+  .chapter-item-name {
+    font-size: 14px; font-style: italic; color: var(--text); margin-bottom: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .chapter-item-meta {
+    font-size: 11px; color: var(--text-dim); letter-spacing: .08em;
+  }
+  .chapter-item.current .chapter-item-name { color: var(--text-bright); }
+
+  .chapters-footer {
+    padding: 14px 22px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim); font-style: italic;
+    letter-spacing: .14em; text-align: center; flex-shrink: 0;
+  }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, .6);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    z-index: 240; opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+  }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+
+  .reader {
+    width: 100%; max-width: 880px; margin: 0 auto;
+    padding: 0; display: flex; flex-direction: column; gap: 0;
+  }
+
+  .chapter-header {
+    width: 100%; padding: 100px 24px 60px;
+    text-align: center; border-bottom: 1px solid var(--border);
+  }
+  .chapter-header .eyebrow {
+    font-size: 11px; letter-spacing: .32em; text-transform: uppercase;
+    color: var(--accent); font-style: italic; margin-bottom: 16px;
+  }
+  .chapter-header .title {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: normal; font-style: italic; letter-spacing: .04em;
+    color: var(--text-bright); margin-bottom: 12px; line-height: 1.1;
+  }
+  .chapter-header .subtitle {
+    font-size: 12px; letter-spacing: .28em; text-transform: uppercase;
+    color: var(--text-dim); font-style: italic;
+  }
+
+  .page {
+    display: block; width: 100%; height: auto;
+    margin: 0; padding: 0;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden; min-height: 500px;
+  }
+  .page::before {
+    content: "страница " attr(data-page);
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-dim); font-size: 11px;
+    letter-spacing: .28em; text-transform: uppercase;
+    font-style: italic; opacity: .35;
+  }
+  .page img { display: block; width: 100%; height: auto; }
+
+  .live-scene {
+    position: relative; width: 100%; height: 100vh;
+    background: #000; overflow: hidden;
+  }
+  .live-scene-sticky {
+    position: sticky; top: 0; width: 100%; height: 100vh;
+    display: grid; place-items: center; overflow: hidden;
+  }
+  .live-scene-frame {
+    position: absolute; inset: 0;
+    background-size: contain; background-position: center; background-repeat: no-repeat;
+    opacity: 0; transition: opacity 1s ease;
+  }
+  .live-scene-frame.active { opacity: 1; }
+
+  .live-scene-hint {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px; letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(255, 255, 255, .4); font-style: italic;
+    pointer-events: none; opacity: 0;
+    animation: hintPulse 2.4s ease-in-out infinite;
+  }
+  .live-scene.played .live-scene-hint { opacity: 1; }
+  @keyframes hintPulse {
+    0%, 100% { opacity: .3; }
+    50% { opacity: .8; }
+  }
+
+  .chapter-end {
+    width: 100%; padding: 70px 24px 110px;
+    text-align: center; border-top: 1px solid var(--border);
+    position: relative;
+  }
+  .chapter-end::before {
+    content: "◆ ◆ ◆";
+    position: absolute; top: -9px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deep);
+    padding: 0 18px; color: var(--accent-dim);
+    font-size: 10px; letter-spacing: 1em;
+    padding-left: calc(18px + 1em);
+  }
+  .chapter-end-title {
+    font-size: clamp(22px, 3.5vw, 30px);
+    font-style: italic; letter-spacing: .08em;
+    color: var(--text-bright); font-weight: normal;
+    margin-bottom: 10px;
+  }
+  .chapter-end-sub {
+    font-size: 11px; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--text-dim); font-style: italic; margin-bottom: 34px;
+  }
+  .chapter-end-actions {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .chapter-end-btn {
+    padding: 14px 30px;
+    font-family: Georgia, serif; font-style: italic;
+    font-size: 12px; letter-spacing: .2em; text-transform: uppercase;
+    border-radius: 8px; cursor: pointer; transition: all .25s ease;
+    text-decoration: none; display: inline-flex; align-items: center;
+    gap: 10px; border: 1px solid transparent; background: none;
+  }
+  .chapter-end-btn.primary {
+    background: var(--accent); color: var(--bg-deep); border-color: var(--accent);
+  }
+  .chapter-end-btn.primary:hover {
+    background: var(--text-bright); border-color: var(--text-bright);
+    box-shadow: 0 10px 30px -10px var(--accent-soft);
+  }
+  .chapter-end-btn.ghost {
+    color: var(--text-dim); border-color: var(--border-strong);
+  }
+  .chapter-end-btn.ghost:hover { color: var(--accent-2); border-color: var(--accent-2); }
+
+  .bottombar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 12px clamp(14px, 3vw, 28px);
+    background: var(--panel);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    transition: transform .3s ease, opacity .3s ease, background .4s, border-color .4s;
+  }
+  .bottombar.hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
+
+  .nav-btn {
+    background: none; border: 1px solid var(--border-strong);
+    border-radius: 8px; padding: 9px 18px;
+    font-family: Georgia, serif; font-size: 11px;
+    letter-spacing: .14em; text-transform: uppercase; font-style: italic;
+    color: var(--text-dim); cursor: pointer;
+    transition: all .2s; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-btn:hover:not(:disabled) {
+    color: var(--accent); border-color: var(--accent);
+    box-shadow: 0 0 16px -6px var(--accent-soft);
+  }
+  .nav-btn:disabled { opacity: .3; cursor: not-allowed; }
+  .nav-btn svg {
+    width: 13px; height: 13px; stroke: currentColor;
+    fill: none; stroke-width: 2; stroke-linecap: round;
+  }
+
+  .page-count {
+    font-size: 11px; letter-spacing: .2em; font-style: italic;
+    color: var(--text-dim); text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .page-count .current { color: var(--accent-2); }
+
+  .first-hint {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    padding: 12px 22px;
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--text-dim); font-style: italic;
+    z-index: 150;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s ease, transform .5s ease, background .4s, border-color .4s, color .4s;
+  }
+  .first-hint.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .first-hint svg {
+    width: 14px; height: 14px; stroke: currentColor;
+    fill: none; stroke-width: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .reader { max-width: 100%; }
+    .topbar-progress { display: none; }
+    .nav-btn { padding: 8px 14px; font-size: 10px; }
+    .chapter-header { padding: 88px 20px 44px; }
+    .chapter-item { padding: 12px 18px; }
+    .chapter-item-num { width: 34px; height: 34px; font-size: 12px; }
+    .topbar-title { font-size: 11px; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="menuBtn" aria-label="Список глав">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </div>
+  <div class="topbar-title">
+    Глава <span class="num">1</span> · Начало
+    <span class="sector" id="sectorLabel">Сектор · Данжен</span>
+  </div>
+  <div class="topbar-progress" id="progressText">0%</div>
+</header>
+
+<aside class="chapters-panel" id="chaptersPanel">
+  <div class="chapters-header">
+    <div class="chapters-eyebrow">Том I</div>
+    <div class="chapters-title">Главы</div>
+    <div class="chapters-sub" id="chaptersSub">Всего 1 глава · обновляется</div>
+  </div>
+
+  <nav class="chapters-list" id="chaptersList">
+    <a class="chapter-item current" data-chapter="1" href="#">
+      <div class="chapter-item-num">1</div>
+      <div class="chapter-item-body">
+        <div class="chapter-item-name">Начало</div>
+        <div class="chapter-item-meta">Сектор Данжен · 6 стр.</div>
+      </div>
+    </a>
+
+    <div class="chapter-item" style="opacity: .3; cursor: not-allowed;">
+      <div class="chapter-item-num">2</div>
+      <div class="chapter-item-body">
+        <div class="chapter-item-name">Скоро</div>
+        <div class="chapter-item-meta">в разработке</div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="chapters-footer">◆ Том I · в работе ◆</div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<main class="reader" id="reader">
+
+  <header class="chapter-header">
+    <div class="eyebrow">Том I · Глава первая</div>
+    <h1 class="title">Начало</h1>
+    <div class="subtitle">Я Второй?!</div>
+  </header>
+
+  <div class="page" data-page="1"></div>
+  <div class="page" data-page="2"></div>
+  <div class="page" data-page="3"></div>
+
+  <section class="live-scene" id="liveScene">
+    <div class="live-scene-sticky">
+      <div class="live-scene-frame" data-frame="1"
+           style="background-image: url('assets/scene-bird-1.webp');"></div>
+      <div class="live-scene-frame" data-frame="2"
+           style="background-image: url('assets/scene-bird-2.webp');"></div>
+      <div class="live-scene-frame" data-frame="3"
+           style="background-image: url('assets/scene-bird-3.webp');"></div>
+      <div class="live-scene-hint">листайте дальше ↓</div>
+    </div>
+  </section>
+
+  <div class="page" data-page="4"></div>
+  <div class="page" data-page="5"></div>
+  <div class="page" data-page="6"></div>
+
+  <div class="chapter-end">
+    <div class="chapter-end-title">Конец главы</div>
+    <div class="chapter-end-sub">Глава 1 · Начало</div>
+    <div class="chapter-end-actions">
+      <a class="chapter-end-btn ghost" href="sectors.html">← К атласу</a>
+      <button class="chapter-end-btn primary" id="nextChapter">Глава 2 →</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="bottombar" id="bottombar">
+  <button class="nav-btn" id="prevBtn" disabled>
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    Пред
+  </button>
+  <div class="page-count" id="pageCount">
+    <span class="current">1</span> / 6
+  </div>
+  <button class="nav-btn" id="nextBtn">
+    След
+    <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</footer>
+
+<div class="first-hint" id="firstHint">
+  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  прокрутите вниз
+</div>
+
+<script>
+  /* ============================================================
+     1. НАЗВАНИЕ СЕКТОРА
+     ============================================================ */
+  const sectorNames = {
+    dungeon: 'Данжен', cyber: 'Кибер', detective: 'Детектив',
+    twilight: 'Сумеречный', space: 'Космический', culinary: 'Кулинарный'
+  };
+  const currentSector = document.documentElement.getAttribute('data-sector');
+  const sectorLabel = document.getElementById('sectorLabel');
+  if (sectorLabel && sectorNames[currentSector]) {
+    sectorLabel.textContent = 'Сектор · ' + sectorNames[currentSector];
+  }
+
+  /* ============================================================
+     2. ПРОГРЕСС И ИНДИКАТОР
+     ============================================================ */
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const pageCount = document.getElementById('pageCount');
+  const pages = document.querySelectorAll('.page');
+  const totalPages = pages.length;
+
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+
+    progressBar.style.width = percent + '%';
+    progressText.textContent = percent + '%';
+
+    let current = 1;
+    pages.forEach((p, i) => {
+      const rect = p.getBoundingClientRect();
+      if (rect.top <= window.innerHeight * 0.4) current = i + 1;
+    });
+    pageCount.innerHTML = `<span class="current">${current}</span> / ${totalPages}`;
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    prevBtn.disabled = current === 1;
+    nextBtn.disabled = current === totalPages;
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  /* ============================================================
+     3. СОХРАНЕНИЕ ПРОГРЕССА ЧТЕНИЯ
+     Меняй три константы в каждом chapter-N.html:
+     CHAPTER_ID, CHAPTER_TITLE, CHAPTER_LINK
+     ============================================================ */
+  const CHAPTER_ID = 1;
+  const CHAPTER_TITLE = 'Начало';
+  const CHAPTER_LINK = 'chapter-1.html';
+
+  let lastSave = 0;
+
+  function saveReadingProgress() {
+    const now = Date.now();
+    if (now - lastSave < 500) return;
+    lastSave = now;
+
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+
+    let currentPage = 1;
+    pages.forEach((p, i) => {
+      const rect = p.getBoundingClientRect();
+      if (rect.top <= window.innerHeight * 0.4) currentPage = i + 1;
+    });
+
+    const data = {
+      chapter: CHAPTER_ID,
+      chapterTitle: CHAPTER_TITLE,
+      link: CHAPTER_LINK,
+      page: currentPage,
+      total: totalPages,
+      percent: percent,
+      updated: now
+    };
+
+    try {
+      localStorage.setItem('yavtoroy_progress', JSON.stringify(data));
+    } catch (e) {}
+  }
+
+  window.addEventListener('scroll', saveReadingProgress, { passive: true });
+  window.addEventListener('beforeunload', saveReadingProgress);
+
+  /* ============================================================
+     4. ВОССТАНОВЛЕНИЕ ПРОГРЕССА ПРИ ЗАХОДЕ
+     Если читатель уже был тут и ушёл не с начала —
+     прокручиваем к сохранённой странице.
+     ============================================================ */
+  (function restoreReadingProgress() {
+    let data = null;
+    try {
+      data = JSON.parse(localStorage.getItem('yavtoroy_progress') || 'null');
+    } catch (e) {}
+
+    if (!data) return;
+    if (data.chapter !== CHAPTER_ID) return;
+    if (!data.page || data.page <= 1) return;
+
+    // Не восстанавливаем, если прошло больше 30 дней
+    const ageDays = (Date.now() - (data.updated || 0)) / (1000 * 60 * 60 * 24);
+    if (ageDays > 30) return;
+
+    // Ждём загрузки — потом скроллим
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const target = pages[data.page - 1];
+        if (!target) return;
+        const y = target.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: y, behavior: 'auto' });
+      }, 100);
+    });
+  })();
+
+  /* ============================================================
+     5. БОКОВАЯ ПАНЕЛЬ ГЛАВ
+     ============================================================ */
+  const menuBtn = document.getElementById('menuBtn');
+  const chaptersPanel = document.getElementById('chaptersPanel');
+  const overlay = document.getElementById('overlay');
+
+  function openChapters() {
+    chaptersPanel.classList.add('open');
+    overlay.classList.add('open');
+  }
+  function closeChapters() {
+    chaptersPanel.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+
+  menuBtn.addEventListener('click', () => {
+    if (chaptersPanel.classList.contains('open')) closeChapters();
+    else openChapters();
+  });
+  overlay.addEventListener('click', closeChapters);
+
+  /* ============================================================
+     6. КЛАВИАТУРА
+     ============================================================ */
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (chaptersPanel.classList.contains('open')) closeChapters();
+      else window.location.href = 'sectors.html';
+    }
+    if (e.key === 'ArrowDown' || e.key === ' ') {
+      if (!chaptersPanel.classList.contains('open')) {
+        e.preventDefault();
+        window.scrollBy({ top: window.innerHeight * 0.85, behavior: 'smooth' });
+      }
+    }
+    if (e.key === 'ArrowUp') {
+      if (!chaptersPanel.classList.contains('open')) {
+        e.preventDefault();
+        window.scrollBy({ top: -window.innerHeight * 0.85, behavior: 'smooth' });
+      }
+    }
+  });
+
+  /* ============================================================
+     7. КЛИКИ ПО ГЛАВАМ В ПАНЕЛИ
+     ============================================================ */
+  document.querySelectorAll('.chapter-item[data-chapter]').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const num = item.dataset.chapter;
+      // window.location.href = `chapter-${num}.html`;
+      console.log('Переход к главе', num);
+      closeChapters();
+    });
+  });
+
+  /* ============================================================
+     8. СКРЫТИЕ / ПОКАЗ ПАНЕЛЕЙ
+     ============================================================ */
+  const topbar = document.getElementById('topbar');
+  const bottombar = document.getElementById('bottombar');
+  const reader = document.getElementById('reader');
+
+  let uiHidden = false;
+  let hideTimer = null;
+
+  function showUI() {
+    uiHidden = false;
+    topbar.classList.remove('hidden');
+    bottombar.classList.remove('hidden');
+  }
+  function scheduleHide() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+      if (window.scrollY > 300 && !chaptersPanel.classList.contains('open')) {
+        uiHidden = true;
+        topbar.classList.add('hidden');
+        bottombar.classList.add('hidden');
+      }
+    }, 3500);
+  }
+
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const now = window.scrollY;
+    if (now < lastScroll - 15) {
+      showUI();
+      clearTimeout(hideTimer);
+    }
+    lastScroll = now;
+  }, { passive: true });
+
+  reader.addEventListener('click', (e) => {
+    if (e.target.closest('a') || e.target.closest('button')) return;
+    if (e.target.closest('.live-scene')) return;
+
+    if (uiHidden) { showUI(); scheduleHide(); }
+    else {
+      uiHidden = true;
+      topbar.classList.add('hidden');
+      bottombar.classList.add('hidden');
+    }
+  });
+
+  scheduleHide();
+
+  /* ============================================================
+     9. ЖИВАЯ СЦЕНА
+     ============================================================ */
+  const liveScene = document.getElementById('liveScene');
+  if (liveScene) {
+    const frames = liveScene.querySelectorAll('.live-scene-frame');
+    let played = false;
+    const frameDelays = { 1: 0, 2: 1500, 3: 3000 };
+
+    function playScene() {
+      if (played) return;
+      played = true;
+
+      Object.keys(frameDelays).forEach((num) => {
+        const frame = liveScene.querySelector(`[data-frame="${num}"]`);
+        if (!frame) return;
+        setTimeout(() => {
+          frames.forEach(f => f.classList.remove('active'));
+          frame.classList.add('active');
+        }, frameDelays[num]);
+      });
+
+      setTimeout(() => liveScene.classList.add('played'), 3800);
+    }
+
+    const sceneObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !played) playScene();
+      });
+    }, { threshold: 0.4 });
+    sceneObserver.observe(liveScene);
+
+    window.addEventListener('scroll', () => {
+      if (played) return;
+      const rect = liveScene.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5) {
+        if (rect.bottom < window.innerHeight * 0.9) {
+          window.scrollTo({ top: window.scrollY - 3, behavior: 'auto' });
+        }
+      }
+    }, { passive: true });
+  }
+
+  /* ============================================================
+     10. КНОПКИ
+     ============================================================ */
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    window.scrollBy({ top: -window.innerHeight * 0.85, behavior: 'smooth' });
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    window.scrollBy({ top: window.innerHeight * 0.85, behavior: 'smooth' });
+  });
+  document.getElementById('nextChapter').addEventListener('click', () => {
+    // window.location.href = 'chapter-2.html';
+    console.log('Глава 2');
+  });
+
+  /* ============================================================
+     11. ПЕРВАЯ ПОДСКАЗКА
+     ============================================================ */
+  const firstHint = document.getElementById('firstHint');
+  setTimeout(() => firstHint.classList.add('show'), 900);
+
+  function hideFirstHint() {
+    if (window.scrollY > 80) {
+      firstHint.classList.remove('show');
+      window.removeEventListener('scroll', hideFirstHint);
+    }
+  }
+  window.addEventListener('scroll', hideFirstHint, { passive: true });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="ru" data-sector="dungeon">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Фанарты — Я Второй?!</title>
+
+<style>
+  html[data-sector="dungeon"] {
+    --bg-deep: #13100c; --bg-surface: #1c1813; --panel: rgba(19, 16, 12, 0.85);
+    --text: #ede0c8; --text-dim: #8a8070; --text-bright: #f6ecd5;
+    --accent: #a8bd8a; --accent-2: #c9a878;
+    --accent-soft: rgba(168, 189, 138, 0.35); --accent-2-soft: rgba(201, 168, 120, 0.35);
+    --accent-dim: #5a6a4a;
+    --border: rgba(237, 224, 200, 0.08); --border-strong: rgba(237, 224, 200, 0.16);
+    --spoiler: #b878d4; --spoiler-soft: rgba(184, 120, 212, 0.35);
+    --heart: #d47a8a; --heart-bright: #e89aab;
+  }
+  html[data-sector="cyber"] {
+    --bg-deep: #0a0e14; --bg-surface: #10161f; --panel: rgba(10, 14, 20, 0.85);
+    --text: #d8e8f4; --text-dim: #5a7a94; --text-bright: #f0fbff;
+    --accent: #5ae0e8; --accent-2: #e8386e;
+    --accent-soft: rgba(90, 224, 232, 0.35); --accent-2-soft: rgba(232, 56, 110, 0.35);
+    --accent-dim: #2a5f66;
+    --border: rgba(90, 224, 232, 0.08); --border-strong: rgba(90, 224, 232, 0.18);
+    --spoiler: #e8386e; --spoiler-soft: rgba(232, 56, 110, 0.35);
+    --heart: #e8386e; --heart-bright: #ff5a8a;
+  }
+  html[data-sector="detective"] {
+    --bg-deep: #17191c; --bg-surface: #1f2226; --panel: rgba(23, 25, 28, 0.85);
+    --text: #d4d7dc; --text-dim: #6e7379; --text-bright: #f0f2f5;
+    --accent: #9aa0a8; --accent-2: #c9a961;
+    --accent-soft: rgba(154, 160, 168, 0.35); --accent-2-soft: rgba(201, 169, 97, 0.35);
+    --accent-dim: #4a5058;
+    --border: rgba(154, 160, 168, 0.10); --border-strong: rgba(154, 160, 168, 0.20);
+    --spoiler: #c9a961; --spoiler-soft: rgba(201, 169, 97, 0.35);
+    --heart: #c9a961; --heart-bright: #e0c078;
+  }
+  html[data-sector="twilight"] {
+    --bg-deep: #0f0a14; --bg-surface: #17101e; --panel: rgba(15, 10, 20, 0.85);
+    --text: #e8d8f0; --text-dim: #7a6a8a; --text-bright: #f4e8fc;
+    --accent: #b878d4; --accent-2: #6fd4d4;
+    --accent-soft: rgba(184, 120, 212, 0.35); --accent-2-soft: rgba(111, 212, 212, 0.35);
+    --accent-dim: #5a3a70;
+    --border: rgba(184, 120, 212, 0.10); --border-strong: rgba(184, 120, 212, 0.20);
+    --spoiler: #b878d4; --spoiler-soft: rgba(184, 120, 212, 0.35);
+    --heart: #d47ac4; --heart-bright: #f09ae0;
+  }
+  html[data-sector="space"] {
+    --bg-deep: #060a18; --bg-surface: #0c1224; --panel: rgba(6, 10, 24, 0.85);
+    --text: #d4ddf4; --text-dim: #5a6a94; --text-bright: #f0f4ff;
+    --accent: #e8c878; --accent-2: #5a8ad4;
+    --accent-soft: rgba(232, 200, 120, 0.35); --accent-2-soft: rgba(90, 138, 212, 0.35);
+    --accent-dim: #6a5828;
+    --border: rgba(232, 200, 120, 0.08); --border-strong: rgba(232, 200, 120, 0.18);
+    --spoiler: #5a8ad4; --spoiler-soft: rgba(90, 138, 212, 0.35);
+    --heart: #e8c878; --heart-bright: #ffe090;
+  }
+  html[data-sector="culinary"] {
+    --bg-deep: #150c08; --bg-surface: #1f120c; --panel: rgba(21, 12, 8, 0.85);
+    --text: #f0dcc4; --text-dim: #8a6a54; --text-bright: #fcecd8;
+    --accent: #e88a4c; --accent-2: #c94a3a;
+    --accent-soft: rgba(232, 138, 76, 0.35); --accent-2-soft: rgba(201, 74, 58, 0.35);
+    --accent-dim: #6a3818;
+    --border: rgba(232, 138, 76, 0.10); --border-strong: rgba(232, 138, 76, 0.20);
+    --spoiler: #c94a3a; --spoiler-soft: rgba(201, 74, 58, 0.35);
+    --heart: #e88a4c; --heart-bright: #ffb080;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    background: var(--bg-deep);
+    font-family: Georgia, serif;
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+    transition: background .4s ease, color .4s ease;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 20% 0%, var(--accent-soft), transparent 55%),
+      radial-gradient(ellipse at 80% 100%, var(--accent-2-soft), transparent 60%),
+      radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0, 0, 0, .5) 100%);
+    opacity: .35;
+    z-index: -2;
+    transition: background .4s ease;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .035;
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 2px, #fff 2px 3px),
+      repeating-linear-gradient(90deg, transparent 0 3px, #fff 3px 4px);
+    z-index: -1;
+    mix-blend-mode: overlay;
+  }
+
+  /* ===== ШАПКА ===== */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px clamp(16px, 4vw, 40px);
+    background: var(--panel);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    transition: background .4s, border-color .4s;
+  }
+  .brand {
+    font-size: 15px;
+    font-style: italic;
+    letter-spacing: .1em;
+    color: var(--text);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .brand b {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: normal;
+    letter-spacing: .06em;
+  }
+  .top-nav {
+    display: flex;
+    gap: clamp(14px, 2.5vw, 30px);
+    font-size: 12px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-style: italic;
+  }
+  .top-nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .top-nav a:hover { color: var(--accent); }
+  .top-nav a.active { color: var(--text); }
+
+  /* ===== КОНТЕЙНЕР ===== */
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: clamp(30px, 5vw, 60px) clamp(16px, 4vw, 40px) clamp(60px, 8vw, 100px);
+  }
+
+  .page-header {
+    margin-bottom: clamp(24px, 3vw, 40px);
+    padding-bottom: clamp(18px, 2.5vw, 26px);
+    border-bottom: 1px solid var(--border);
+  }
+  .page-eyebrow {
+    font-size: 11px;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-size: clamp(30px, 4vw, 46px);
+    font-style: italic;
+    letter-spacing: .04em;
+    color: var(--text-bright);
+    font-weight: normal;
+    line-height: 1.1;
+  }
+  .page-title .alt {
+    color: var(--accent);
+    font-style: normal;
+    letter-spacing: .06em;
+  }
+  .page-sub {
+    font-size: 12px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  /* ===== ПАНЕЛЬ ФИЛЬТРОВ ===== */
+  .filter-bar {
+    margin-bottom: clamp(24px, 3vw, 36px);
+    padding: clamp(18px, 2.2vw, 24px) clamp(18px, 2.4vw, 28px);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .filter-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 10px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-style: italic;
+    min-width: 90px;
+    padding-top: 8px;
+    flex-shrink: 0;
+  }
+
+  .filter-chips-wrap {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  /* Чипы-фильтры */
+  .chip {
+    background: none;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    padding: 7px 14px;
+    font-family: Georgia, serif;
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-style: italic;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chip:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+  .chip.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 16px -6px var(--accent-soft);
+  }
+  .chip .chip-count {
+    font-size: 10px;
+    opacity: .55;
+    font-style: normal;
+    letter-spacing: 0;
+    padding-left: 2px;
+  }
+  .chip.active .chip-count { opacity: .85; }
+
+  /* Тумблер спойлеров */
+  .spoiler-btn {
+    background: none;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    padding: 8px 16px 8px 8px;
+    font-family: Georgia, serif;
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-style: italic;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+  .spoiler-btn:hover {
+    color: var(--text);
+    border-color: var(--spoiler);
+  }
+  .spoiler-btn.active {
+    color: var(--spoiler);
+    border-color: var(--spoiler);
+    background: var(--spoiler-soft);
+  }
+  .spoiler-track {
+    position: relative;
+    width: 30px;
+    height: 16px;
+    border-radius: 100px;
+    background: rgba(0, 0, 0, .35);
+    border: 1px solid var(--border-strong);
+    flex-shrink: 0;
+    transition: background .3s, border-color .3s;
+  }
+  .spoiler-thumb {
+    position: absolute;
+    top: 1px; left: 1px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    transition: transform .3s cubic-bezier(.4,0,.2,1), background .3s;
+  }
+  .spoiler-btn.active .spoiler-track {
+    background: var(--spoiler-soft);
+    border-color: var(--spoiler);
+  }
+  .spoiler-btn.active .spoiler-thumb {
+    transform: translateX(14px);
+    background: var(--spoiler);
+  }
+
+  /* Поиск */
+  .search-wrap {
+    flex: 1;
+    position: relative;
+    max-width: 340px;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    padding: 9px 18px 9px 40px;
+    font-family: Georgia, serif;
+    font-size: 12px;
+    letter-spacing: .06em;
+    font-style: italic;
+    color: var(--text);
+    transition: border-color .2s, background .4s;
+    outline: none;
+  }
+  .search-input:focus {
+    border-color: var(--accent);
+  }
+  .search-input::placeholder {
+    color: var(--text-dim);
+    opacity: .7;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    stroke: var(--text-dim);
+    fill: none;
+    stroke-width: 1.8;
+    pointer-events: none;
+  }
+
+  /* Инфо-строка */
+  .filter-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .filter-count .num { color: var(--accent); }
+  .filter-hearts .num { color: var(--heart-bright); }
+
+  .reset-btn {
+    background: none;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    color: var(--text-dim);
+    font-family: Georgia, serif;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-style: italic;
+    cursor: pointer;
+    padding: 7px 14px;
+    transition: all .2s;
+    display: none;
+  }
+  .reset-btn.show { display: inline-flex; align-items: center; gap: 6px; }
+  .reset-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ===== СЕТКА ===== */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: clamp(14px, 2vw, 22px);
+  }
+
+  .art {
+    position: relative;
+    display: block;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: var(--bg-surface);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    animation: artFade .4s ease backwards;
+  }
+  @keyframes artFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .art:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 24px 50px -22px rgba(0, 0, 0, .85);
+  }
+
+  .art.spoiler { border-color: var(--spoiler-soft); }
+  .art.spoiler:hover {
+    border-color: var(--spoiler);
+    box-shadow: 0 24px 50px -22px rgba(0, 0, 0, .85), 0 0 30px -8px var(--spoiler-soft);
+  }
+  .art.spoiler::before {
+    content: "⚠ спойлер";
+    position: absolute;
+    top: 10px; left: 10px;
+    z-index: 3;
+    padding: 4px 10px;
+    background: rgba(20, 10, 24, .85);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--spoiler-soft);
+    border-radius: 100px;
+    font-size: 9px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--spoiler);
+    font-style: italic;
+  }
+
+  .art-thumb {
+    aspect-ratio: 1 / 1;
+    display: grid;
+    place-items: center;
+    background:
+      repeating-linear-gradient(45deg, var(--border) 0 10px, transparent 10px 20px),
+      var(--bg-deep);
+    color: var(--text-dim);
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    font-style: italic;
+    position: relative;
+    overflow: hidden;
+  }
+  .art-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .5s ease;
+  }
+  .art:hover .art-thumb img { transform: scale(1.04); }
+
+  /* Сердечко */
+  .heart-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border: 1px solid rgba(212, 122, 138, .35);
+    border-radius: 100px;
+    background: rgba(20, 12, 14, .6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .15s;
+    font-family: inherit;
+  }
+  .heart-btn:hover {
+    border-color: var(--heart-bright);
+    background: rgba(40, 20, 24, .75);
+  }
+  .heart-btn:active { transform: scale(.94); }
+
+  .heart-icon {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--heart);
+    stroke-width: 1.8;
+    transition: fill .2s, stroke .2s;
+  }
+  .heart-btn.liked .heart-icon,
+  .heart-btn:hover .heart-icon {
+    fill: var(--heart-bright);
+    stroke: var(--heart-bright);
+  }
+  .heart-count {
+    font-size: 11px;
+    letter-spacing: .04em;
+    color: var(--text-soft);
+    font-style: italic;
+    transition: color .2s;
+    min-width: 12px;
+    text-align: center;
+  }
+  .heart-btn:hover .heart-count { color: var(--heart-bright); }
+
+  @keyframes heartPop {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.35); }
+    70%  { transform: scale(.92); }
+    100% { transform: scale(1); }
+  }
+  .heart-btn.pop .heart-icon {
+    animation: heartPop .45s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  @keyframes heartFloat {
+    0%   { opacity: 1; transform: translate(-50%, 0) scale(.8); }
+    100% { opacity: 0; transform: translate(-50%, -40px) scale(1.4); }
+  }
+  .heart-float {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    fill: var(--heart-bright);
+    pointer-events: none;
+    animation: heartFloat .8s ease-out forwards;
+    z-index: 6;
+  }
+
+  /* Подпись */
+  .art-caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 30px 16px 14px;
+    background: linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.75) 55%, transparent 100%);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .3s ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .art:hover .art-caption {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .art-title {
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: .04em;
+    color: #f6ecd5;
+    margin-bottom: 4px;
+    line-height: 1.25;
+  }
+  .art-author {
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: rgba(237, 224, 200, .7);
+    font-style: italic;
+  }
+  .art-author b {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: normal;
+  }
+
+  /* Пустое */
+  .empty {
+    grid-column: 1 / -1;
+    padding: 80px 20px;
+    text-align: center;
+    color: var(--text-dim);
+    font-style: italic;
+    letter-spacing: .2em;
+    font-size: 13px;
+  }
+  .empty svg {
+    width: 40px; height: 40px;
+    stroke: currentColor; fill: none; stroke-width: 1.2;
+    margin: 0 auto 16px; display: block;
+    opacity: .5;
+  }
+
+  /* ===== МОДАЛКА ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 500;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s ease;
+    padding: 20px;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .modal {
+    position: relative;
+    width: min(1100px, 100%);
+    max-height: 92vh;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    box-shadow: 0 60px 100px -30px rgba(0, 0, 0, .9);
+    transform: translateY(20px) scale(.97);
+    transition: transform .4s cubic-bezier(.2, .8, .2, 1);
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    overflow: hidden;
+  }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+  .modal-image {
+    background: var(--bg-deep);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    min-height: 400px;
+  }
+  .modal-image img {
+    max-width: 100%;
+    max-height: 92vh;
+    display: block;
+    object-fit: contain;
+  }
+
+  .modal-info {
+    padding: clamp(24px, 3vw, 36px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .modal-eyebrow {
+    font-size: 10px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-style: italic;
+  }
+  .modal-title {
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-style: italic;
+    letter-spacing: .03em;
+    color: var(--text-bright);
+    font-weight: normal;
+    line-height: 1.2;
+  }
+  .modal-divider {
+    width: 50px;
+    height: 1px;
+    background: linear-gradient(to right, var(--accent), transparent);
+  }
+  .modal-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .modal-meta-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .modal-meta-label {
+    color: var(--text-dim);
+    letter-spacing: .08em;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+  .modal-meta-value {
+    color: var(--text);
+    text-align: right;
+  }
+  .modal-meta-value.accent {
+    color: var(--accent);
+    font-style: italic;
+  }
+  .modal-meta-value a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent-dim);
+  }
+  .modal-meta-value a:hover { border-bottom-style: solid; }
+
+  .modal-note {
+    padding: 14px 16px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+  }
+  .modal-note-label {
+    font-size: 10px;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-style: normal;
+  }
+
+  /* Кнопка лайка в модалке */
+  .modal-like {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px 10px 14px;
+    border: 1px solid rgba(212, 122, 138, .4);
+    border-radius: 100px;
+    background: none;
+    font-family: Georgia, serif;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-style: italic;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .2s;
+    align-self: flex-start;
+  }
+  .modal-like:hover {
+    border-color: var(--heart-bright);
+    color: var(--heart-bright);
+  }
+  .modal-like.liked {
+    border-color: var(--heart);
+    color: var(--heart-bright);
+    background: rgba(212, 122, 138, .12);
+  }
+  .modal-like svg {
+    width: 15px; height: 15px;
+    fill: none;
+    stroke: var(--heart);
+    stroke-width: 1.8;
+    transition: fill .2s;
+  }
+  .modal-like.liked svg { fill: var(--heart-bright); stroke: var(--heart-bright); }
+  .modal-like .like-count {
+    font-style: normal;
+    letter-spacing: 0;
+    opacity: .8;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    font-size: 18px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all .2s;
+    z-index: 10;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+  .modal-close:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(0, 0, 0, .8);
+  }
+
+  /* ===== ФУТЕР ===== */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 30px clamp(16px, 4vw, 40px);
+    background: var(--panel);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background .4s, border-color .4s;
+  }
+  .footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 11px;
+    letter-spacing: .18em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    font-style: italic;
+  }
+  .footer-links { display: flex; flex-wrap: wrap; gap: 24px; }
+  .footer-inner a { color: var(--text-dim); text-decoration: none; transition: color .2s; }
+  .footer-inner a:hover { color: var(--accent); }
+  .footer-copy b { color: var(--accent); font-style: normal; font-weight: normal; }
+
+  /* ===== АДАПТИВ ===== */
+  @media (max-width: 900px) {
+    .modal { grid-template-columns: 1fr; }
+    .modal-image { min-height: 250px; }
+    .modal-image img { max-height: 55vh; }
+  }
+  @media (max-width: 640px) {
+    .top-nav { display: none; }
+    .gallery { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .filter-label { min-width: auto; padding-top: 0; }
+    .filter-row { flex-direction: column; gap: 8px; }
+    .search-wrap { max-width: 100%; }
+    .art-caption { padding: 20px 10px 10px; }
+    .art-title { font-size: 12px; }
+    .art-author { font-size: 10px; }
+  }
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <a class="brand" href="hub.html">Я <b>Второй?!</b></a>
+  <nav class="top-nav">
+    <a href="sectors.html">Секторы</a>
+    <a href="characters.html">Персонажи</a>
+    <a href="#" class="active">Фанарты</a>
+    <a href="#">Об авторе</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <header class="page-header">
+    <div class="page-eyebrow">Архив · Галерея</div>
+    <h1 class="page-title">Фанарты <span class="alt">и арты</span></h1>
+    <div class="page-sub" id="pageSub">— работ пока нет —</div>
+  </header>
+
+  <!-- ===== ФИЛЬТРЫ ===== -->
+  <section class="filter-bar">
+
+    <!-- Персонажи -->
+    <div class="filter-row" id="charRow" style="display:none;">
+      <span class="filter-label">Кто</span>
+      <div class="filter-chips-wrap" id="charChips"></div>
+    </div>
+
+    <!-- Секторы -->
+    <div class="filter-row" id="sectorRow" style="display:none;">
+      <span class="filter-label">Где</span>
+      <div class="filter-chips-wrap" id="sectorChips"></div>
+    </div>
+
+    <!-- Поиск + спойлеры -->
+    <div class="filter-row">
+      <span class="filter-label">Поиск</span>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="M20 20l-4.5-4.5"/>
+        </svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="по названию или автору...">
+      </div>
+
+      <button class="spoiler-btn" id="spoilerBtn">
+        <span class="spoiler-track"><span class="spoiler-thumb"></span></span>
+        <span class="spoiler-label-text">Показать спойлеры</span>
+      </button>
+    </div>
+
+    <!-- Инфо -->
+    <div class="filter-info">
+      <div class="filter-count">
+        Показано: <span class="num" id="countShown">0</span>
+        из <span class="num" id="countTotal">0</span>
+      </div>
+      <div class="filter-hearts" id="heartsTotalBlock" style="display:none;">
+        Всего сердечек: <span class="num" id="heartsTotal">0</span>
+      </div>
+      <button class="reset-btn" id="resetBtn">Сбросить фильтры ✕</button>
+    </div>
+
+  </section>
+
+  <!-- ===== СЕТКА ===== -->
+  <section class="gallery" id="gallery"></section>
+
+</main>
+
+<!-- ===== МОДАЛКА ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose" aria-label="Закрыть">✕</button>
+
+    <div class="modal-image">
+      <img id="modalImg" src="" alt="">
+    </div>
+
+    <div class="modal-info">
+      <div class="modal-eyebrow" id="modalEyebrow">Фанарт</div>
+      <div class="modal-title" id="modalTitle">—</div>
+      <div class="modal-divider"></div>
+
+      <div class="modal-meta">
+        <div class="modal-meta-row">
+          <span class="modal-meta-label">Автор</span>
+          <span class="modal-meta-value accent" id="modalAuthor">—</span>
+        </div>
+        <div class="modal-meta-row">
+          <span class="modal-meta-label">Персонаж</span>
+          <span class="modal-meta-value" id="modalCharacter">—</span>
+        </div>
+        <div class="modal-meta-row">
+          <span class="modal-meta-label">Сектор</span>
+          <span class="modal-meta-value" id="modalSector">—</span>
+        </div>
+        <div class="modal-meta-row" id="modalLinkRow" style="display:none;">
+          <span class="modal-meta-label">Ссылка</span>
+          <span class="modal-meta-value"><a id="modalLink" href="#" target="_blank" rel="noopener">открыть ↗</a></span>
+        </div>
+      </div>
+
+      <div class="modal-note" id="modalNoteBlock" style="display:none;">
+        <div class="modal-note-label">Подпись от автора сайта</div>
+        <div id="modalNote">—</div>
+      </div>
+
+      <button class="modal-like" id="modalLike">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 21s-7-4.35-9.5-9C.86 8.65 3 5 6.5 5 9 5 10.5 7 12 9c1.5-2 3-4 5.5-4C21 5 23.14 8.65 21.5 12 19 16.65 12 21 12 21z"/>
+        </svg>
+        <span>Лайк</span>
+        <span class="like-count" id="modalLikeCount">0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="#">Twitter / X</a>
+      <a href="#">VK</a>
+      <a href="#">Telegram</a>
+      <a href="#">Boosty</a>
+    </div>
+    <div class="footer-copy">© <b>Я Второй?!</b></div>
+  </div>
+</footer>
+
+<script>
+  /* ============================================================
+     ДАННЫЕ ФАНАРТОВ
+     ────────────────────────────────────────────────────────────
+     Добавляешь новый арт — копируешь объект и меняешь данные.
+     Сетка, фильтры, счётчики, лайки — всё обновится само.
+
+     Поля:
+       image        — путь к картинке (положи в assets/)
+       title        — название работы
+       author       — ник автора (@ник)
+       authorLink   — (опц.) ссылка на автора
+       character    — id персонажа (vtoroy, overlord, linel, vera, ...)
+       characterName— имя персонажа
+       sector       — id сектора (dungeon, cyber, ...)
+       sectorName   — имя сектора
+       spoiler      — true/false. Скрыт, пока не включён тумблер спойлеров
+       note         — (опц.) подпись от тебя как владельца
+       link         — (опц.) ссылка на пост/публикацию
+     ============================================================ */
+
+  const fanarts = [
+    {
+      image: 'assets/fanart-01.webp',
+      title: 'Второй в темноте',
+      author: '@some_artist',
+      authorLink: 'https://twitter.com/some_artist',
+      character: 'vtoroy',
+      characterName: 'Второй',
+      sector: 'dungeon',
+      sectorName: 'Данжен',
+      spoiler: false,
+      note: 'Очень нравится, как передана усталость во взгляде.',
+    },
+    {
+      image: 'assets/fanart-02.webp',
+      title: 'Финал · обвал',
+      author: '@another_artist',
+      character: 'vtoroy',
+      characterName: 'Второй',
+      sector: 'dungeon',
+      sectorName: 'Данжен',
+      spoiler: true,
+      note: 'Сцена, которую нельзя смотреть без слёз.',
+    },
+    {
+      image: 'assets/fanart-03.webp',
+      title: 'Линель за стойкой',
+      author: '@reader_one',
+      character: 'linel',
+      characterName: 'Линель',
+      sector: 'dungeon',
+      sectorName: 'Данжен',
+      spoiler: false,
+    },
+    {
+      image: 'assets/fanart-04.webp',
+      title: 'Оверлорд орёт',
+      author: '@reader_two',
+      character: 'overlord',
+      characterName: 'Оверлорд',
+      sector: 'dungeon',
+      sectorName: 'Данжен',
+      spoiler: false,
+    },
+    {
+      image: 'assets/fanart-05.webp',
+      title: 'Тропа через Бездну',
+      author: '@wanderer',
+      character: 'vera',
+      characterName: 'Вера',
+      sector: 'twilight',
+      sectorName: 'Сумеречный',
+      spoiler: true,
+      note: 'Это как я вижу переход между секторами.',
+    },
+    // Добавляй сюда новые работы через запятую
+  ];
+
+  /* ============================================================
+     ЛОГИКА — ниже трогать не нужно
+     ============================================================ */
+
+  const gallery = document.getElementById('gallery');
+  const charChips = document.getElementById('charChips');
+  const sectorChips = document.getElementById('sectorChips');
+  const charRow = document.getElementById('charRow');
+  const sectorRow = document.getElementById('sectorRow');
+  const spoilerBtn = document.getElementById('spoilerBtn');
+  const spoilerLabelText = spoilerBtn.querySelector('.spoiler-label-text');
+  const countShown = document.getElementById('countShown');
+  const countTotal = document.getElementById('countTotal');
+  const heartsTotal = document.getElementById('heartsTotal');
+  const heartsTotalBlock = document.getElementById('heartsTotalBlock');
+  const resetBtn = document.getElementById('resetBtn');
+  const pageSub = document.getElementById('pageSub');
+  const searchInput = document.getElementById('searchInput');
+
+  /* ============================================================
+     ХРАНИЛИЩЕ ЛАЙКОВ (localStorage)
+     ============================================================ */
+  const LIKES_KEY = 'yavtoroy_fanart_likes_v1';
+
+  function loadLikes() {
+    try { return JSON.parse(localStorage.getItem(LIKES_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function saveLikes(obj) {
+    try { localStorage.setItem(LIKES_KEY, JSON.stringify(obj)); } catch (e) {}
+  }
+
+  let likes = loadLikes();
+
+  /* ============================================================
+     СОСТОЯНИЕ ФИЛЬТРОВ
+     ============================================================ */
+  let spoilersOn = false;
+  let activeCharacter = null;
+  let activeSector = null;
+  let searchQuery = '';
+
+  /* ============================================================
+     УНИКАЛЬНЫЕ ПЕРСОНАЖИ/СЕКТОРЫ
+     ============================================================ */
+  function uniqueWithCount(list, key, nameKey) {
+    const map = new Map();
+    list.forEach(item => {
+      if (!item[key]) return;
+      if (!map.has(item[key])) {
+        map.set(item[key], { key: item[key], name: item[nameKey] || item[key], count: 0 });
+      }
+      map.get(item[key]).count++;
+    });
+    return Array.from(map.values());
+  }
+
+  /* ============================================================
+     РЕНДЕР ФИЛЬТРОВ
+     ============================================================ */
+  function renderFilters() {
+    const chars = uniqueWithCount(fanarts, 'character', 'characterName');
+    const sectors = uniqueWithCount(fanarts, 'sector', 'sectorName');
+
+    // Показываем строку персонажей только если их больше одного
+    if (chars.length > 1) {
+      charRow.style.display = 'flex';
+      charChips.innerHTML = chars.map(c =>
+        `<button class="chip" data-type="char" data-key="${c.key}">
+          ${c.name} <span class="chip-count">${c.count}</span>
+        </button>`
+      ).join('');
+    } else {
+      charRow.style.display = 'none';
+    }
+
+    if (sectors.length > 1) {
+      sectorRow.style.display = 'flex';
+      sectorChips.innerHTML = sectors.map(s =>
+        `<button class="chip" data-type="sector" data-key="${s.key}">
+          ${s.name} <span class="chip-count">${s.count}</span>
+        </button>`
+      ).join('');
+    } else {
+      sectorRow.style.display = 'none';
+    }
+  }
+
+  /* ============================================================
+     ФИЛЬТРАЦИЯ
+     ============================================================ */
+  function getFiltered() {
+    const q = searchQuery.trim().toLowerCase();
+    return fanarts.filter(art => {
+      if (!spoilersOn && art.spoiler) return false;
+      if (activeCharacter && art.character !== activeCharacter) return false;
+      if (activeSector && art.sector !== activeSector) return false;
+      if (q) {
+        const haystack = (art.title + ' ' + art.author + ' ' + (art.characterName || '')).toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  /* ============================================================
+     РЕНДЕР СЕТКИ
+     ============================================================ */
+  function renderGallery() {
+    const filtered = getFiltered();
+
+    countShown.textContent = filtered.length;
+    countTotal.textContent = fanarts.length;
+
+    // Общий счётчик лайков
+    let totalHearts = 0;
+    fanarts.forEach(art => {
+      totalHearts += likes[art.image] || 0;
+    });
+    if (totalHearts > 0) {
+      heartsTotalBlock.style.display = 'block';
+      heartsTotal.textContent = totalHearts;
+    } else {
+      heartsTotalBlock.style.display = 'none';
+    }
+
+    // Подзаголовок
+    if (fanarts.length === 0) {
+      pageSub.textContent = '— работ пока нет —';
+    } else {
+      pageSub.textContent = `Всего работ · ${fanarts.length}`;
+    }
+
+    // Пусто
+    if (filtered.length === 0) {
+      gallery.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="16" rx="2"/>
+            <circle cx="8.5" cy="9.5" r="1.5"/>
+            <path d="M3 16 L9 12 L14 16 L18 13 L21 15"/>
+          </svg>
+          Ничего не найдено
+        </div>
+      `;
+      return;
+    }
+
+    gallery.innerHTML = filtered.map((art, i) => {
+      const artIndex = fanarts.indexOf(art);
+      const likeCount = likes[art.image] || 0;
+      return `
+        <div class="art ${art.spoiler ? 'spoiler' : ''}"
+             data-id="${artIndex}"
+             style="animation-delay: ${i * 0.04}s">
+          <div class="art-thumb">
+            <img src="${art.image}" alt="${art.title}" loading="lazy"
+                 onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('afterbegin','<span>${art.title}</span>');">
+          </div>
+          <button class="heart-btn" data-image="${art.image}" aria-label="Поставить лайк">
+            <svg class="heart-icon" viewBox="0 0 24 24">
+              <path d="M12 21s-7-4.35-9.5-9C.86 8.65 3 5 6.5 5 9 5 10.5 7 12 9c1.5-2 3-4 5.5-4C21 5 23.14 8.65 21.5 12 19 16.65 12 21 12 21z"/>
+            </svg>
+            <span class="heart-count">${likeCount}</span>
+          </button>
+          <div class="art-caption">
+            <div class="art-title">${art.title}</div>
+            <div class="art-author">автор · <b>${art.author}</b></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Клик по карточке → модалка
+    gallery.querySelectorAll('.art').forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.heart-btn')) return;
+        const id = parseInt(el.dataset.id);
+        openModal(fanarts[id]);
+      });
+    });
+
+    // Клик по сердечку
+    gallery.querySelectorAll('.heart-btn').forEach(btn => {
+      btn.addEventListener('click', handleHeartClick);
+    });
+  }
+
+  /* ============================================================
+     ЛАЙКИ
+     ============================================================ */
+  function handleHeartClick(e) {
+    e.stopPropagation();
+    const btn = e.currentTarget;
+    const imageKey = btn.dataset.image;
+
+    const oldCount = likes[imageKey] || 0;
+    likes[imageKey] = oldCount + 1;
+    saveLikes(likes);
+
+    // Обновить цифру
+    btn.querySelector('.heart-count').textContent = likes[imageKey];
+
+    // Анимации
+    btn.classList.add('liked');
+    btn.classList.remove('pop');
+    void btn.offsetWidth;
+    btn.classList.add('pop');
+    setTimeout(() => btn.classList.remove('pop'), 500);
+
+    // Летящее сердечко
+    const float = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    float.setAttribute('viewBox', '0 0 24 24');
+    float.setAttribute('class', 'heart-float');
+    float.innerHTML = '<path d="M12 21s-7-4.35-9.5-9C.86 8.65 3 5 6.5 5 9 5 10.5 7 12 9c1.5-2 3-4 5.5-4C21 5 23.14 8.65 21.5 12 19 16.65 12 21 12 21z"/>';
+    btn.parentElement.appendChild(float);
+    setTimeout(() => float.remove(), 850);
+
+    // Обновить общий счётчик
+    let totalHearts = 0;
+    fanarts.forEach(art => { totalHearts += likes[art.image] || 0; });
+    if (totalHearts > 0) {
+      heartsTotalBlock.style.display = 'block';
+      heartsTotal.textContent = totalHearts;
+    }
+  }
+
+  /* ============================================================
+     МОДАЛКА
+     ============================================================ */
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalImg = document.getElementById('modalImg');
+  const modalEyebrow = document.getElementById('modalEyebrow');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalAuthor = document.getElementById('modalAuthor');
+  const modalCharacter = document.getElementById('modalCharacter');
+  const modalSector = document.getElementById('modalSector');
+  const modalLink = document.getElementById('modalLink');
+  const modalLinkRow = document.getElementById('modalLinkRow');
+  const modalNote = document.getElementById('modalNote');
+  const modalNoteBlock = document.getElementById('modalNoteBlock');
+  const modalClose = document.getElementById('modalClose');
+  const modalLike = document.getElementById('modalLike');
+  const modalLikeCount = document.getElementById('modalLikeCount');
+
+  let currentArt = null;
+
+  function openModal(art) {
+    currentArt = art;
+
+    modalImg.src = art.image;
+    modalImg.alt = art.title;
+    modalTitle.textContent = art.title;
+    modalEyebrow.textContent = art.spoiler ? 'Спойлерный арт' : 'Фанарт';
+
+    modalAuthor.textContent = art.author;
+    if (art.authorLink) {
+      modalAuthor.innerHTML = `<a href="${art.authorLink}" target="_blank" rel="noopener">${art.author}</a>`;
+    }
+
+    modalCharacter.textContent = art.characterName || '—';
+    modalSector.textContent = art.sectorName || '—';
+
+    if (art.link) {
+      modalLink.href = art.link;
+      modalLinkRow.style.display = 'flex';
+    } else {
+      modalLinkRow.style.display = 'none';
+    }
+
+    if (art.note) {
+      modalNote.textContent = art.note;
+      modalNoteBlock.style.display = 'block';
+    } else {
+      modalNoteBlock.style.display = 'none';
+    }
+
+    // Лайк
+    const likeCount = likes[art.image] || 0;
+    modalLikeCount.textContent = likeCount;
+    modalLike.classList.toggle('liked', likeCount > 0);
+
+    modalOverlay.classList.add('open');
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('open');
+    modalImg.src = '';
+    currentArt = null;
+  }
+
+  modalLike.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!currentArt) return;
+
+    const key = currentArt.image;
+    likes[key] = (likes[key] || 0) + 1;
+    saveLikes(likes);
+
+    modalLikeCount.textContent = likes[key];
+    modalLike.classList.add('liked');
+
+    // Обновляем цифру и в сетке, если она видна
+    const gridBtn = gallery.querySelector(`.heart-btn[data-image="${key}"]`);
+    if (gridBtn) {
+      gridBtn.querySelector('.heart-count').textContent = likes[key];
+      gridBtn.classList.add('liked');
+    }
+
+    // Общий счётчик
+    let totalHearts = 0;
+    fanarts.forEach(art => { totalHearts += likes[art.image] || 0; });
+    if (totalHearts > 0) {
+      heartsTotalBlock.style.display = 'block';
+      heartsTotal.textContent = totalHearts;
+    }
+  });
+
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+  });
+
+  /* ============================================================
+     ТУМБЛЕР СПОЙЛЕРОВ
+     ============================================================ */
+  spoilerBtn.addEventListener('click', () => {
+    spoilersOn = !spoilersOn;
+    spoilerBtn.classList.toggle('active', spoilersOn);
+    spoilerLabelText.textContent = spoilersOn ? 'Скрыть спойлеры' : 'Показать спойлеры';
+    updateReset();
+    renderGallery();
+  });
+
+  /* ============================================================
+     ЧИПЫ-ФИЛЬТРЫ
+     ============================================================ */
+  function handleChipClick(e) {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+
+    const type = chip.dataset.type;
+    const key = chip.dataset.key;
+
+    if (type === 'char') {
+      if (activeCharacter === key) {
+        activeCharacter = null;
+        chip.classList.remove('active');
+      } else {
+        activeCharacter = key;
+        charChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      }
+    } else if (type === 'sector') {
+      if (activeSector === key) {
+        activeSector = null;
+        chip.classList.remove('active');
+      } else {
+        activeSector = key;
+        sectorChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      }
+    }
+
+    updateReset();
+    renderGallery();
+  }
+
+  charChips.addEventListener('click', handleChipClick);
+  sectorChips.addEventListener('click', handleChipClick);
+
+  /* ============================================================
+     ПОИСК
+     ============================================================ */
+  let searchTimer = null;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = e.target.value;
+      updateReset();
+      renderGallery();
+    }, 150);
+  });
+
+  /* ============================================================
+     СБРОС
+     ============================================================ */
+  function updateReset() {
+    const hasActive = activeCharacter || activeSector || spoilersOn || searchQuery;
+    resetBtn.classList.toggle('show', !!hasActive);
+  }
+
+  resetBtn.addEventListener('click', () => {
+    activeCharacter = null;
+    activeSector = null;
+    spoilersOn = false;
+    searchQuery = '';
+    searchInput.value = '';
+    spoilerBtn.classList.remove('active');
+    spoilerLabelText.textContent = 'Показать спойлеры';
+    charChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    sectorChips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    updateReset();
+    renderGallery();
+  });
+
+  /* ============================================================
+     СТАРТ
+     ============================================================ */
+  renderFilters();
+  renderGallery();
+</script>
+
+</body>
+</html>
